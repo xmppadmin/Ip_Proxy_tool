@@ -1,47 +1,87 @@
 # Ip_Proxy_tool
-获取代理,,建立代理池，提供ip网络接口
+Get proxy, establish proxy pool, provide ip network interface
+
 # Ip_Proxy_tool
 
-## 安装
+## installation
 
-### 安装Python
+### Install Python
 
-至少Python3.5以上
+At least Python3.5 or above
 
-### 安装mysql
+### Install mysql
+Configuring MySQL Repository on Debian
+To add the MySQL APT repository to your system go to the repository download page and download the latest release package using the following wget command :
 
-安装好之后将mysql服务开启
+wget http://repo.mysql.com/mysql-apt-config_0.8.15-1_all.deb
+Once the download is completed install the release package as a user with sudo privileges :
 
-### 配置代理池
+sudo apt install ./mysql-apt-config_0.8.15-1_all.deb
+
+You will be presented with the configuration menu from where you can select the MySQL version you want to install.
+
+Update the package list with and install the MySQL server package by running:
+
+sudo apt update
+sudo apt install mysql-server
+
+Once the installation is completed, the MySQL service will start automatically, you can verify it by typing:
+
+sudo systemctl status mysql
+
+### Securing MySQL 
+Run the mysql_secure_installation command to set the root password and to improve the security of the MySQL installation:
+
+sudo mysql_secure_installation
+
+### Connecting to the MySQL Server
+
+If you selected the default authentication method to log in to the MySQL server as the root user type:
+
+sudo mysql
+
+Otherwise, if you selected the legacy authentication method to log in type:
+
+mysql -u root -p
+
+You will be prompted to enter the root password you have previously set when the mysql_secure_installation script was run.
+
+
+After installation, turn on the mysql service
+
+
+### Configure proxy pool
 
 ```
 cd Ip_Proxy_tool
 ```
 
-进入Ip_Proxy_tool目录，修改settings.py文件
+Enter the Ip_Proxy_tool directory and modify the settings.py file
 
-修改mysql 用户名 密码
+Modify mysql username and password
 
-#### 安装依赖
+
+#### Installation dependencies
 
 ```
 pip3 install -r requirements.txt
 ```
 
-#### 首先建立数据库表
+#### First create a database table
+
 python CreateTable.py
 
-#user='root', passwd='toor', db='spiders'
- 注意此处的数据库、用户名和密码
+#user='root', passwd='toor', db='spiders' Note the database, username and password here
 
-其次，打开代理池和API
+
+Second, open the proxy pool and API
 
 python run.py
 
-## 获取代理
+## Get an agent
 
-利用requests获取方法代理的实例
 
+Use requests to obtain an instance of a method proxy
 
 
 ```python get_proxy_example.py
@@ -59,4 +99,4 @@ def get_proxy():
     }    
     return proxies
 ```
-如果需要添加别的一些代理网站，可以修改 crawler.py 
+If you need to add some other proxy websites, you can modify crawler.py

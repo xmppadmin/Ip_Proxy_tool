@@ -3,9 +3,12 @@
 import requests
 from requests.exceptions import ConnectionError
 import random
+from loguru import logger
+
+
 def get_user_agent():
     '''
-    随机获取一个用户代理
+    Randomly obtain a user agent
     '''
     user_agents=[
         "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
@@ -44,7 +47,7 @@ def get_user_agent():
         "Mozilla/5.0 (X11; U; Linux x86_64; zh-CN; rv:1.9.2.10) Gecko/20100922 Ubuntu/10.10 (maverick) Firefox/3.6.10",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36"
     ]
-    # random.choice返回列表的随机项
+    # random.choice returns the random item of the list
     user_agent = random.choice(user_agents)
     return user_agent
 
@@ -54,7 +57,7 @@ def get_user_agent():
 
 def get_page(url, proxy=None,options={}):
     """
-    抓取代理
+    :Crawling agent
     :param url:
     :param options:
     :return:
@@ -64,13 +67,14 @@ def get_page(url, proxy=None,options={}):
     'Accept-Encoding': 'gzip, deflate, sdch',
     'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7'}
     headers = dict(base_headers, **options)
-    print('正在抓取', url)
+    print('Crawling', url)
     try:
         requests.adapters.DEFAULT_RETRIES = 2  #
         response = requests.get(url, headers=headers,proxies=proxy)
-        print('抓取成功', url, response.status_code)
+        logger.log('DEBUG', f' urils - Crawling url: {url} Response : {response.status_code} ')
+        print('Fetched successfully', url, response.status_code)
         if response.status_code == 200:
             return response.content
     except ConnectionError:
-        print('抓取失败', url)
+        print('Crawl failed', url)
         return None

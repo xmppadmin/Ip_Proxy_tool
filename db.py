@@ -11,23 +11,20 @@ import pymysql
 class MysqlClient(object):
     def __init__(self ):
         """
-        初始化数据库MYSQL_HOST,MYSQL_USER,MYSQL_PORT, MYSQL_PASSWORD,MYSQL_DB
+        Initialize the database MYSQL_HOST,MYSQL_USER,MYSQL_PORT, MYSQL_PASSWORD,MYSQL_DB
         """
         self.conn = pymysql.connect(host=MYSQL_HOST, user=MYSQL_USER,port=MYSQL_PORT, password=MYSQL_PASSWORD,database=MYSQL_DB,charset='utf8mb4')
         self.cursor = self.conn.cursor()
-     
-   
+
     def add(self,proxy,score=INITIAL_SCORE):
-        
         """
-        添加代理，设置分数为最高
-        :param proxy: 代理PROXY_IP,PROXY_PORT,PROXY_TYPE
-        :param score: 分数
-        :return: 添加结果
+        Add an agent, set the score to the highest
+        :param proxy: proxy PROXY_IP,PROXY_PORT,PROXY_TYPE
+        :param score: fraction
+        :return: add results
         """
-        
+
         sql='INSERT INTO ProxyComment(IP,PORT,TYPE,SCORE) VALUES (%s,%s,%s,%s)'
-            
         try:
             #print(type(proxy))
             #print(proxy)
@@ -40,8 +37,8 @@ class MysqlClient(object):
 
     def random(self):
         """
-        随机获取有效代理，首先尝试获取最高分数代理，如果不存在，按照排名获取，否则异常
-        :return: 随机代理
+        Get a valid agent randomly, first try to get the highest score agent, if it does not exist, get it according to the ranking, otherwise abnormal
+        :return: Random agent
         """
         sql='SELECT * FROM  ProxyComment WHERE SCORE ="100"'
         self.cursor.execute(sql)
@@ -59,34 +56,35 @@ class MysqlClient(object):
                 #raise PoolEmptyError
     def decrease(self,proxy):
         """
-        代理值减一分，小于最小值则删除
-        :param proxy: 代理proxy 
-        :return: 修改后的代理分数
+        Proxy value minus one point, delete if it is less than the minimum
+        :param proxy: proxy proxy 
+        :return: Modified proxy score
         """
         sql='SELECT SCORE FROM  ProxyComment WHERE IP=%s'
        
         self.cursor.execute(sql,(proxy[0]))
         score = self.cursor.fetchone()
-        if (score[0] == None and score[0]==0):
-            print('代理', proxy, '当前分数', score, '移除')
+#        if (score[0] == None and score[0]==0):
+# ======================================
+        # remove all proxies with scopre < MIN_SCORE
+        if score[0] < MIN_SCORE:
+            print('proxy', proxy, 'Previous score', score, 'Remove')
             sql='DELETE FROM ProxyComment WHERE IP=%s'
             self.cursor.execute(sql,(proxy[0]))
             self.conn.commit()
             return 
         elif score[0] > MIN_SCORE:
-            print('代理', proxy, '当前分数', score, '减1')
+            print('proxy', proxy, 'Current score', score, 'Minus 1')
             sql='update ProxyComment set SCORE=SCORE-1 where IP=%s'
             self.cursor.execute(sql,(proxy[0]))
             self.conn.commit()
             return 
-        
-            
-        
+
     def exists(self,proxy):
         """
-        判断是否存在
-        :param proxy: 代理
-        :return: 是否存在
+        Determine if it exists
+        :param proxy: proxy
+        :return: does it exist
         """
         sql='SELECT * FROM ProxyComment where IP=%s'
         self.cursor.execute(sql,(proxy[0]))
@@ -95,25 +93,24 @@ class MysqlClient(object):
            return  True
         else:
            return  False
-           
-    
+
     def max_(self,proxy):
         """
-        将代理设置为MAX_SCORE
-        :param proxy: 代理
-        :return: 设置结果
+        Set proxy to MAX_SCORE
+        :param proxy: proxy
+        :return: Set result
         """
-        print('代理', proxy, '可用，设置为', MAX_SCORE)
+        print('proxy', proxy, 'Available, set to', MAX_SCORE)
         sql='update ProxyComment set SCORE= %s where IP=%s'
         #print(sql)
         self.cursor.execute(sql,(MAX_SCORE,proxy[0]))
         self.conn.commit()
         return 
-    
+
     def count(self):
         """
-        获取数量
-        :return: 数量
+        Acquired quantity
+        :return: Quantity
         """
         sql='SELECT * FROM  ProxyComment'
         self.cursor.execute(sql)
@@ -121,8 +118,8 @@ class MysqlClient(object):
     
     def all(self):
         """
-        获取全部代理
-        :return: 全部代理列表
+        Get all agents
+        :return: List of all agents
         """
         sql='SELECT * FROM  ProxyComment'
         
@@ -132,11 +129,11 @@ class MysqlClient(object):
     
     def batch(self,start,stop):
         """
-        批量获取
-        select * from employee limit 3, 7; // 返回4-11行
-        :param start: 开始索引
-        :param stop: 结束索引
-        :return: 代理列表
+        Batch acquisition
+        select * from employee limit 3, 7; // Return lines 4-11
+        :param start: Start index
+        :param stop: End index
+        :return: Proxy list
         """
         sql='SELECT * FROM  ProxyComment LIMIT %s,%s'
         #print(sql)
@@ -154,28 +151,25 @@ class MysqlClient(object):
         self.cursor.close()
     """
 """
-创建mysql对象：
+Create mysql object：
 
 mysql_test = Mysql('192.168.232.128','3306','root','123456','iceny')
-      创建表t1：
+      Create table t1：
 
 mysql_test.exec('create table t1 (id int auto_increment primary key,timestamp TIMESTAMP)')
       image.png
 
-      往t1插入一条数据：
+      Insert a piece of data into t1：
        
         if not re.match('\d+\.\d+\.\d+\.\d+\:\d+', proxy):
-            print('代理不符合规范', proxy, '丢弃')
+            print('The agent does not meet the specifications', proxy, 'throw away')
             return
     
 
 mysql_test.exec('insert into t1 (id,timestamp) value (NULL,CURRENT_TIMESTAMP)')
 """
-   
-    
-    
-    
-    
+ 
+
 if __name__ == '__main__':
     conn = MysqlClient()
     result = conn.batch(680,688)

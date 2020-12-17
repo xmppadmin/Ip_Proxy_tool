@@ -16,7 +16,7 @@ class Getter():
     
     def is_over_threshold(self):
         """
-        判断是否达到了代理池限制
+        Determine whether the agent pool limit has been reached
         """
         if self.Mysql.count() >= POOL_UPPER_THRESHOLD:
             return True
@@ -24,11 +24,11 @@ class Getter():
             return False
     
     def run(self):
-        print('获取器开始执行')
+        print('Get the execution')
         if not self.is_over_threshold():
             for callback_label in range(self.crawler.__CrawlFuncCount__):
                 callback = self.crawler.__CrawlFunc__[callback_label]
-                # 获取代理
+                # Get an agent
                 proxies = self.crawler.get_proxies(callback)
                 sys.stdout.flush()
                 for proxy in proxies:
